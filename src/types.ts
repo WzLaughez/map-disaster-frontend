@@ -1,5 +1,7 @@
 export interface Report {
   id: string
+  name: string | null
+  reporterWa: string
   disasterType: string
   description: string | null
   kecamatan: string | null

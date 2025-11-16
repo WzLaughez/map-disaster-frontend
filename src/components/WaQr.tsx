@@ -6,7 +6,7 @@ export default function WaQr() {
   const apiBase = useMemo(() => {
     // Customize API base via VITE_API_URL if needed
     const fromEnv = (import.meta as any)?.env?.VITE_API_URL as string | undefined
-    return fromEnv || 'http://localhost:3000'
+    return fromEnv || 'https://api.chatbencana.pspig.online'
   }, [])
 
   useEffect(() => {

@@ -177,6 +177,15 @@ export default function ReportList({ reports, isLoading, onReportClick, onDataCh
           <thead className="bg-gray-50 sticky top-0">
             <tr>
               <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider border-b">
+                No
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider border-b">
+                Nama
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider border-b">
+                No HP
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider border-b">
                 Jenis
               </th>
               <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider border-b">
@@ -216,6 +225,21 @@ export default function ReportList({ reports, isLoading, onReportClick, onDataCh
                 onClick={() => onReportClick?.(report)}
                 className="hover:bg-blue-50 cursor-pointer transition-colors"
               >
+                <td className="px-4 py-3 whitespace-nowrap">
+                  <span className="text-sm font-medium text-gray-900">
+                    {report.id}
+                  </span>
+                </td>
+                <td className="px-4 py-3 whitespace-nowrap">
+                  <span className="text-sm font-medium text-gray-900">
+                    {report.name || '-'}
+                  </span>
+                </td>
+                <td className="px-4 py-3 whitespace-nowrap">
+                  <span className="text-sm font-medium text-gray-900">
+                    {report.reporterWa || '-'}
+                  </span>
+                </td>
                 <td className="px-4 py-3 whitespace-nowrap">
                   <span className="text-sm font-medium text-gray-900">
                     {disasterTypeLabels[report.disasterType.toLowerCase()] || report.disasterType}
