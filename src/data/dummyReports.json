@@ -1,0 +1,43 @@
+{
+  "reports": [
+    {
+      "id": "693c2705-eea5-4af4-a748-fa99faf09f0d",
+      "reporterWa": "65408207954102@lid",
+      "name": "Haried",
+      "disasterType": "longsor",
+      "description": "Kejadian berdampak ke gedung dan ruangan di sekitar",
+      "severity": "Sedang",
+      "happenedAt": "2025-11-18T01:37:59.516Z",
+      "address": null,
+      "lat": 0.1236832,
+      "lon": 110.5959121,
+      "kecamatan": null,
+      "desa": null,
+      "mediaUrls": [],
+      "status": "new",
+      "nextStep": null,
+      "createdAt": "2025-11-18T01:38:44.585Z",
+      "updatedAt": "2025-11-18T01:38:44.585Z"
+    },
+    {
+      "id": "94a91cad-8d05-4079-b33c-55f20e50f085",
+      "reporterWa": "65408207954102@lid",
+      "name": "Pak heri p",
+      "disasterType": "angin kencang",
+      "description": "Kejadian terjadi saat cuaca mendung",
+      "severity": "Rendah",
+      "happenedAt": "2025-11-17T13:50:00.000Z",
+      "address": "LPSE Sanggau",
+      "lat": 0.1236802,
+      "lon": 110.5956529,
+      "kecamatan": null,
+      "desa": null,
+      "mediaUrls": [],
+      "status": "new",
+      "nextStep": null,
+      "createdAt": "2025-11-18T01:40:45.659Z",
+      "updatedAt": "2025-11-18T01:40:45.659Z"
+    }
+  ]
+}
+
