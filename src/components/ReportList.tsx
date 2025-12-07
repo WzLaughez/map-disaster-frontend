@@ -96,27 +96,27 @@ export default function ReportList({ reports, isLoading, onReportClick, onDataCh
   return (
     <div className="h-full flex flex-col bg-white">
       {/* Filters */}
-      <div className="p-4 border-b bg-gray-50 space-y-3">
-        {/* Disaster Type Filter */}
-        <div>
-          <label className="block text-xs font-semibold text-gray-700 mb-1">Jenis Bencana</label>
-          <select
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-sm"
-          >
-            <option value="all">Semua Jenis Bencana</option>
-            <option value="banjir">Banjir</option>
-            <option value="kebakaran">Kebakaran</option>
-            <option value="longsor">Longsor</option>
-            <option value="angin">Angin Kencang</option>
-            <option value="gempa">Gempa</option>
-            <option value="lainnya">Lainnya</option>
-          </select>
-        </div>
+      <div className="p-4 border-b bg-gray-50">
+        <div className="grid grid-cols-3 gap-3 mb-3">
+          {/* Disaster Type Filter */}
+          <div>
+            <label className="block text-xs font-semibold text-gray-700 mb-1">Jenis Bencana</label>
+            <select
+              value={filter}
+              onChange={(e) => setFilter(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-sm"
+            >
+              <option value="all">Semua Jenis Bencana</option>
+              <option value="banjir">Banjir</option>
+              <option value="kebakaran">Kebakaran</option>
+              <option value="longsor">Longsor</option>
+              <option value="angin">Angin Kencang</option>
+              <option value="gempa">Gempa</option>
+              <option value="lainnya">Lainnya</option>
+            </select>
+          </div>
 
-        {/* Kecamatan and Desa Filters - Side by Side */}
-        <div className="grid grid-cols-2 gap-3">
+          {/* Kecamatan Filter */}
           <div>
             <label className="block text-xs font-semibold text-gray-700 mb-1">Kecamatan</label>
             <select
@@ -133,6 +133,7 @@ export default function ReportList({ reports, isLoading, onReportClick, onDataCh
             </select>
           </div>
 
+          {/* Desa Filter */}
           <div>
             <label className="block text-xs font-semibold text-gray-700 mb-1">Desa/Kelurahan</label>
             <select

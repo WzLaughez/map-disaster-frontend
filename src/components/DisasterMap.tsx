@@ -259,6 +259,24 @@ function DistrictBoundary() {
 }
 
 export default function DisasterMap({ data, isLoading }: DisasterMapProps) {
+  const [filterType, setFilterType] = useState<string>('all')
+
+  // Filter features based on disaster type
+  const filteredData = data ? {
+    ...data,
+    features: filterType === 'all' 
+      ? data.features 
+      : data.features.filter(feature => {
+          const featureType = feature.properties.type.toLowerCase()
+          const selectedType = filterType.toLowerCase()
+          // Handle "angin kencang" and "angin" as the same
+          if (selectedType === 'angin' || selectedType === 'angin kencang') {
+            return featureType === 'angin kencang' || featureType === 'angin'
+          }
+          return featureType === selectedType
+        })
+  } : null
+
   if (isLoading) {
     return (
       <div className="h-full w-full flex items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100">
@@ -272,6 +290,24 @@ export default function DisasterMap({ data, isLoading }: DisasterMapProps) {
 
   return (
     <div className="relative w-full h-full">
+      {/* Filter Dropdown */}
+      <div className="absolute top-6 left-6 bg-white rounded-xl shadow-2xl p-3 z-[1000] border border-gray-200">
+        <label className="block text-xs font-semibold text-gray-700 mb-2">Filter Jenis Bencana</label>
+        <select
+          value={filterType}
+          onChange={(e) => setFilterType(e.target.value)}
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-sm min-w-[180px]"
+        >
+          <option value="all">Semua Jenis Bencana</option>
+          <option value="banjir">Banjir</option>
+          <option value="kebakaran">Kebakaran</option>
+          <option value="longsor">Longsor</option>
+          <option value="angin kencang">Angin Kencang</option>
+          <option value="gempa">Gempa</option>
+          <option value="lainnya">Lainnya</option>
+        </select>
+      </div>
+
       <MapContainer
         center={SANGGAU_CENTER}
         zoom={DEFAULT_ZOOM}
@@ -286,7 +322,7 @@ export default function DisasterMap({ data, isLoading }: DisasterMapProps) {
         />
 
         {/* Update map bounds when data changes */}
-        <MapBoundsUpdater data={data} />
+        <MapBoundsUpdater data={filteredData} />
 
         {/* Display regency boundary */}
         <RegencyBoundary />
@@ -295,7 +331,7 @@ export default function DisasterMap({ data, isLoading }: DisasterMapProps) {
         <DistrictBoundary />
 
       {/* Render disaster markers */}
-      {data?.features.map((feature) => {
+      {filteredData?.features.map((feature) => {
         const [lon, lat] = feature.geometry.coordinates
         const customIcon = createCustomIcon(feature.properties.type)
 
