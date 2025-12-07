@@ -136,6 +136,128 @@ function RegencyBoundary() {
   )
 }
 
+// Component to load and display district (kecamatan) boundaries
+function DistrictBoundary() {
+  const [boundaryData, setBoundaryData] = useState<any>(null)
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchBoundary = async () => {
+      try {
+        // Fetch all kecamatan (districts) within Kabupaten Sanggau
+        // Using bounding box around Sanggau and filtering for kecamatan boundaries
+        // Kecamatan are typically admin_level=6 or admin_level=7 in Indonesia
+        const query = `
+          [out:json][timeout:60];
+          (
+            relation["boundary"="administrative"]["admin_level"~"^[67]$"](109.0,0.0,111.0,1.0);
+          );
+          out geom;
+        `
+        
+        const response = await fetch(
+          `https://overpass-api.de/api/interpreter?data=${encodeURIComponent(query)}`
+        )
+        const data = await response.json()
+          
+        if (data.elements && data.elements.length > 0) {
+          // Convert Overpass format to GeoJSON
+          // Filter for kecamatan (districts) - usually have "Kecamatan" or "Kec." in name or are admin_level 6/7
+          const features = data.elements
+            .filter((element: any) => {
+              if (element.type !== 'relation' || !element.members) return false
+              const name = element.tags?.name || ''
+              const nameId = element.tags?.['name:id'] || ''
+              // Include if it's a kecamatan (contains "Kecamatan" or similar) or admin_level 6/7
+              return (
+                name.toLowerCase().includes('kecamatan') ||
+                name.toLowerCase().includes('kec.') ||
+                name.toLowerCase().includes('kec ') ||
+                nameId.toLowerCase().includes('kecamatan') ||
+                element.tags?.admin_level === '6' ||
+                element.tags?.admin_level === '7'
+              )
+            })
+            .map((element: any) => {
+                // Get outer boundaries
+                const outerWays = element.members
+                  .filter((m: any) => m.type === 'way' && m.role === 'outer' && m.geometry)
+                  .map((m: any) => 
+                    m.geometry
+                      .filter((g: any) => g.lat && g.lon)
+                      .map((g: any) => [g.lon, g.lat])
+                  )
+                  .filter((coords: any) => coords && coords.length > 0)
+
+                if (outerWays.length === 0) return null
+
+                // If multiple outer ways, create MultiPolygon; otherwise Polygon
+                const geometry = outerWays.length === 1
+                  ? {
+                      type: 'Polygon',
+                      coordinates: [outerWays[0]]
+                    }
+                  : {
+                      type: 'MultiPolygon',
+                      coordinates: outerWays.map((way: any) => [way])
+                    }
+
+                return {
+                  type: 'Feature',
+                  properties: {
+                    name: element.tags?.name || element.tags?.['name:id'] || 'Kecamatan',
+                    admin_level: element.tags?.admin_level
+                  },
+                  geometry
+                }
+              })
+              .filter((f: any) => f !== null)
+
+          if (features.length > 0) {
+            setBoundaryData({
+              type: 'FeatureCollection',
+              features
+            })
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching district boundaries:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchBoundary()
+  }, [])
+
+  if (isLoading || !boundaryData) return null
+
+  // Style function for districts
+  const styleDistrict = (_feature: any) => ({
+    color: '#10b981', // Green color for district boundaries
+    weight: 2,
+    opacity: 0.7,
+    fillColor: '#10b981',
+    fillOpacity: 0.05,
+    dashArray: '3, 3'
+  })
+
+  // Add popup on click
+  const onEachFeature = (feature: any, layer: any) => {
+    if (feature.properties && feature.properties.name) {
+      layer.bindPopup(`<strong>Kecamatan:</strong> ${feature.properties.name}`)
+    }
+  }
+
+  return (
+    <GeoJSON
+      data={boundaryData}
+      style={styleDistrict}
+      onEachFeature={onEachFeature}
+    />
+  )
+}
+
 export default function DisasterMap({ data, isLoading }: DisasterMapProps) {
   if (isLoading) {
     return (
@@ -168,6 +290,9 @@ export default function DisasterMap({ data, isLoading }: DisasterMapProps) {
 
         {/* Display regency boundary */}
         <RegencyBoundary />
+
+        {/* Display district (kecamatan) boundaries */}
+        <DistrictBoundary />
 
       {/* Render disaster markers */}
       {data?.features.map((feature) => {
@@ -205,11 +330,6 @@ export default function DisasterMap({ data, isLoading }: DisasterMapProps) {
                     {feature.properties.desa && (
                       <span><span className="font-semibold">Desa:</span> {feature.properties.desa}</span>
                     )}
-                  </p>
-                )}
-                {feature.properties.severity && (
-                  <p className="text-sm text-gray-600 mb-2">
-                    <span className="font-semibold">Keparahan:</span> {feature.properties.severity}
                   </p>
                 )}
                 <p className="text-xs text-gray-500 mt-2 pt-2 border-t border-gray-200">

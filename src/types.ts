@@ -7,11 +7,10 @@ export interface Report {
   kecamatan: string | null
   desa: string | null
   address: string | null
-  severity: string | null
-  happenedAt: string | null
   createdAt: string
   lat: number
   lon: number
+  mediaUrls?: string[] // Array of media URLs
 }
 
 export interface ReportsResponse {
@@ -34,7 +33,6 @@ export interface GeoJSONFeature {
     address: string | null
     kecamatan: string | null
     desa: string | null
-    severity: string | null
     created_at: string
   }
 }

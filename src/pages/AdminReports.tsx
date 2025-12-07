@@ -6,6 +6,25 @@ import { useAuth } from '../context/AuthContext'
 import DisasterMap from '../components/DisasterMap'
 import WaQr from '../components/WaQr'
 
+// Helper function to get full image URL
+const getImageUrl = (mediaUrl: string): string => {
+  console.log('getImageUrl called with:', mediaUrl)
+  
+  if (mediaUrl.startsWith('http')) {
+    return mediaUrl // Already a full URL
+  }
+  
+  const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:3000'
+  // Remove trailing slash from apiBase if present
+  const base = apiBase.replace(/\/$/, '')
+  // Ensure mediaUrl starts with /
+  const url = mediaUrl.startsWith('/') ? mediaUrl : `/${mediaUrl}`
+  const fullUrl = `${base}${url}`
+  
+  console.log('Constructed image URL:', fullUrl)
+  return fullUrl
+}
+
 export default function AdminReports() {
 	const { logout } = useAuth()
 	const [reports, setReports] = useState<Report[]>([])
@@ -86,10 +105,10 @@ export default function AdminReports() {
 					className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[9999] p-4 animate-in fade-in duration-200"
 					onClick={() => setSelectedReport(null)}
 				>
-					<div
-						className="bg-white rounded-2xl max-w-lg w-full p-8 shadow-2xl transform transition-all animate-in zoom-in-95 duration-200"
-						onClick={(e) => e.stopPropagation()}
-					>
+				<div
+					className="bg-white rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto p-8 shadow-2xl transform transition-all animate-in zoom-in-95 duration-200"
+					onClick={(e) => e.stopPropagation()}
+				>
 						<div className="flex justify-between items-start mb-6">
 							<div className="flex items-center gap-3">
 								<div className="bg-gradient-to-br from-blue-500 to-blue-600 p-3 rounded-xl">
@@ -118,6 +137,39 @@ export default function AdminReports() {
 								</div>
 							)}
 
+							{selectedReport.mediaUrls && selectedReport.mediaUrls.length > 0 && (
+								<div className="bg-purple-50 p-4 rounded-xl border border-purple-200">
+									<span className="text-xs text-purple-600 font-semibold uppercase tracking-wide flex items-center gap-1 mb-3">
+										📷 Foto Dokumentasi
+									</span>
+									<div className="space-y-3">
+										{selectedReport.mediaUrls.map((mediaUrl, index) => (
+											<div key={index} className="relative group">
+												<img
+													src={getImageUrl(mediaUrl)}
+													alt={`Dokumentasi bencana ${index + 1}`}
+													className="w-full h-auto rounded-lg border-2 border-purple-300 shadow-md hover:shadow-xl transition-all duration-200 cursor-zoom-in object-contain bg-gray-100"
+													onClick={() => window.open(getImageUrl(mediaUrl), '_blank')}
+													loading="lazy"
+													onError={(e) => {
+														const target = e.target as HTMLImageElement
+														target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300"%3E%3Crect fill="%23ddd" width="400" height="300"/%3E%3Ctext fill="%23999" font-family="sans-serif" font-size="18" x="50%25" y="50%25" text-anchor="middle" dy=".3em"%3EGambar tidak dapat dimuat%3C/text%3E%3C/svg%3E'
+														target.onerror = null // Prevent infinite loop
+													}}
+												/>
+												<div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 rounded-lg transition-colors pointer-events-none" />
+											</div>
+										))}
+									</div>
+									<p className="text-xs text-purple-500 mt-3 italic flex items-center gap-1">
+										<svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+											<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
+										</svg>
+										Klik gambar untuk melihat ukuran penuh
+									</p>
+								</div>
+							)}
+
 							{selectedReport.address && (
 								<div className="bg-blue-50 p-4 rounded-xl border border-blue-200">
 									<span className="text-xs text-blue-600 font-semibold uppercase tracking-wide flex items-center gap-1">
@@ -143,26 +195,9 @@ export default function AdminReports() {
 								</div>
 							)}
 
-							{selectedReport.severity && (
-								<div className="bg-yellow-50 p-4 rounded-xl border border-yellow-200">
-									<span className="text-xs text-yellow-700 font-semibold uppercase tracking-wide">⚠️ Keparahan</span>
-									<p className="text-gray-800 mt-1 font-semibold">{selectedReport.severity}</p>
-								</div>
-							)}
-
-							<div className="grid grid-cols-2 gap-4">
-								<div className="bg-gray-50 p-4 rounded-xl">
-									<span className="text-xs text-gray-600 font-semibold uppercase tracking-wide">🕒 Waktu Kejadian</span>
-									<p className="text-gray-800 mt-1 text-sm">
-										{selectedReport.happenedAt
-											? new Date(selectedReport.happenedAt).toLocaleString('id-ID')
-											: 'Tidak disebutkan'}
-									</p>
-								</div>
-								<div className="bg-gray-50 p-4 rounded-xl">
-									<span className="text-xs text-gray-600 font-semibold uppercase tracking-wide">📅 Dilaporkan</span>
-									<p className="text-gray-800 mt-1 text-sm">{new Date(selectedReport.createdAt).toLocaleString('id-ID')}</p>
-								</div>
+							<div className="bg-gray-50 p-4 rounded-xl">
+								<span className="text-xs text-gray-600 font-semibold uppercase tracking-wide">📅 Dilaporkan</span>
+								<p className="text-gray-800 mt-1 text-sm">{new Date(selectedReport.createdAt).toLocaleString('id-ID')}</p>
 							</div>
 						</div>
 					</div>

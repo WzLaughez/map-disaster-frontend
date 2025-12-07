@@ -18,11 +18,6 @@ const disasterTypeLabels: Record<string, string> = {
   lainnya: 'Lainnya',
 }
 
-const severityColors: Record<string, string> = {
-  rendah: 'bg-green-100 text-green-800',
-  sedang: 'bg-yellow-100 text-yellow-800',
-  tinggi: 'bg-red-100 text-red-800',
-}
 
 export default function ReportList({ reports, isLoading, onReportClick, onDataChange }: ReportListProps) {
   const [filter, setFilter] = useState<string>('all')
@@ -201,12 +196,6 @@ export default function ReportList({ reports, isLoading, onReportClick, onDataCh
                 Lokasi
               </th>
               <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider border-b">
-                Keparahan
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider border-b">
-                Waktu
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider border-b">
                 Aksi
               </th>
             </tr>
@@ -214,7 +203,7 @@ export default function ReportList({ reports, isLoading, onReportClick, onDataCh
           <tbody className="bg-white divide-y divide-gray-200">
             {filteredReports.length === 0 ? (
               <tr>
-                <td colSpan={8} className="px-4 py-8 text-center text-gray-500">
+                <td colSpan={6} className="px-4 py-8 text-center text-gray-500">
                   <p>Tidak ada laporan bencana</p>
                 </td>
               </tr>
@@ -264,17 +253,6 @@ export default function ReportList({ reports, isLoading, onReportClick, onDataCh
                   <p className="text-sm text-gray-600 line-clamp-1 max-w-xs">
                     {report.address || (report.lat && report.lon ? `${report.lat.toFixed(6)}, ${report.lon.toFixed(6)}` : '-')}
                   </p>
-                </td>
-                <td className="px-4 py-3 whitespace-nowrap">
-                  {report.severity ? (
-                    <span className={`px-2 py-1 text-xs rounded-full ${
-                      severityColors[report.severity.toLowerCase()] || 'bg-gray-100 text-gray-800'
-                    }`}>
-                      {report.severity}
-                    </span>
-                  ) : (
-                    <span className="text-sm text-gray-400">-</span>
-                  )}
                 </td>
                 <td className="px-4 py-3 whitespace-nowrap">
                   <span className="text-xs text-gray-500">
