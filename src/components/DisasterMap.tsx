@@ -42,6 +42,9 @@ function createCustomIcon(type: string): L.DivIcon {
 interface DisasterMapProps {
   data: GeoJSONResponse | null
   isLoading: boolean
+  filterType?: string
+  onFilterChange?: (filterType: string) => void
+  onReportClick?: (reportId: string) => void
 }
 
 // Kabupaten Sanggau coordinates
@@ -258,8 +261,8 @@ function DistrictBoundary() {
   )
 }
 
-export default function DisasterMap({ data, isLoading }: DisasterMapProps) {
-  const [filterType, setFilterType] = useState<string>('all')
+export default function DisasterMap({ data, isLoading, filterType: propFilterType = 'all', onReportClick }: DisasterMapProps) {
+  const filterType = propFilterType
 
   // Filter features based on disaster type
   const filteredData = data ? {
@@ -290,23 +293,6 @@ export default function DisasterMap({ data, isLoading }: DisasterMapProps) {
 
   return (
     <div className="relative w-full h-full">
-      {/* Filter Dropdown */}
-      <div className="absolute top-6 left-6 bg-white rounded-xl shadow-2xl p-3 z-[1000] border border-gray-200">
-        <label className="block text-xs font-semibold text-gray-700 mb-2">Filter Jenis Bencana</label>
-        <select
-          value={filterType}
-          onChange={(e) => setFilterType(e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-sm min-w-[180px]"
-        >
-          <option value="all">Semua Jenis Bencana</option>
-          <option value="banjir">Banjir</option>
-          <option value="kebakaran">Kebakaran</option>
-          <option value="longsor">Longsor</option>
-          <option value="angin kencang">Angin Kencang</option>
-          <option value="gempa">Gempa</option>
-          <option value="lainnya">Lainnya</option>
-        </select>
-      </div>
 
       <MapContainer
         center={SANGGAU_CENTER}
@@ -347,14 +333,14 @@ export default function DisasterMap({ data, isLoading }: DisasterMapProps) {
                   {feature.properties.type.toUpperCase()}
                 </h3>
                 {feature.properties.desc && (
-                  <p className="text-sm text-gray-700 mb-2">
+                  <p className="text-sm text-gray-700 mb-2 line-clamp-2">
                     {feature.properties.desc}
                   </p>
                 )}
                 {feature.properties.address && (
                   <p className="text-sm text-gray-600 mb-2 flex items-start gap-1">
                     <span>📍</span>
-                    <span>{feature.properties.address}</span>
+                    <span className="line-clamp-1">{feature.properties.address}</span>
                   </p>
                 )}
                 {(feature.properties.kecamatan || feature.properties.desa) && (
@@ -368,12 +354,20 @@ export default function DisasterMap({ data, isLoading }: DisasterMapProps) {
                     )}
                   </p>
                 )}
-                <p className="text-xs text-gray-500 mt-2 pt-2 border-t border-gray-200">
+                <p className="text-xs text-gray-500 mt-2 pt-2 border-t border-gray-200 mb-2">
                   {new Date(feature.properties.created_at).toLocaleString('id-ID', {
                     dateStyle: 'medium',
                     timeStyle: 'short',
                   })}
                 </p>
+                {onReportClick && (
+                  <button
+                    onClick={() => onReportClick(feature.properties.id)}
+                    className="w-full mt-2 px-3 py-1.5 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
+                  >
+                    Lihat Detail & Foto
+                  </button>
+                )}
               </div>
             </Popup>
           </Marker>

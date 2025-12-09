@@ -28,12 +28,15 @@ export interface GeoJSONFeature {
   }
   properties: {
     id: string
+    name: string | null
+    reporterWa: string
     type: string
     desc: string | null
     address: string | null
     kecamatan: string | null
     desa: string | null
     created_at: string
+    mediaUrls?: string[] // Optional, may not be in GeoJSON but can be fetched
   }
 }
 

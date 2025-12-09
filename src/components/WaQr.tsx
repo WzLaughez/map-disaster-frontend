@@ -6,10 +6,12 @@ export default function WaQr() {
   const apiBase = useMemo(() => {
     // Customize API base via VITE_API_URL if needed
     const fromEnv = (import.meta as any)?.env?.VITE_API_URL as string | undefined
-    return fromEnv || 'https://api.chatbencana.pspig.online'
+    return fromEnv
   }, [])
 
   useEffect(() => {
+    if (!apiBase) return
+    
     const es = new EventSource(`${apiBase}/api/wa/qr/stream`)
     es.onmessage = (evt) => {
       try {
@@ -47,7 +49,7 @@ export default function WaQr() {
             <img
               src={imgSrc}
               alt="WA Login QR"
-              className="w-64 h-64 border rounded"
+              className="w-32 h-32 border rounded"
             />
           ) : null}
           <p className="text-sm text-gray-600 mt-3 text-center">
